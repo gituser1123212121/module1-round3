@@ -20,5 +20,7 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
 db.user = require("./User.js")(sequelize, Sequelize);
+db.book = require("./Book.js")(sequelize, Sequelize);
+
 
 module.exports = db;
