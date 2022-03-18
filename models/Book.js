@@ -1,6 +1,6 @@
 module.exports = (sequelize, Sequelize) => {
   const DataTypes = Sequelize.DataTypes;
-  const Book = sequelize.define('Book', {
+  const Book = sequelize.define("Book", {
     id: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -13,20 +13,23 @@ module.exports = (sequelize, Sequelize) => {
     },
     name: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
     },
     author: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
     },
     publishedOn: {
       type: DataTypes.STRING,
-      defaultValue: ""
+      defaultValue: "",
     },
     addedOn: {
       type: DataTypes.STRING,
       allowNull: false,
-    }
+    },
+    rentedBy: {
+      type: DataTypes.INTEGER,
+    },
   });
   return Book;
 };
