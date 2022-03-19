@@ -94,7 +94,15 @@ const mutateBook = (req, res, next) => {
                     res.status(500).json({ message: err.message });
                   });
               } else {
-                res.status(400).json({ message: `that book cannot be rented` });
+                if (bookFound.rentedBy === decodedToken.userId) {
+                  res.status(200).json({
+                    message: `you cannot rent the same book twice, return it to re-rent it`,
+                  });
+                } else {
+                  res
+                    .status(400)
+                    .json({ message: `that book cannot be rented` });
+                }
               }
             })
             .catch((err) => {
