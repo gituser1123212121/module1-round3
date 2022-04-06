@@ -3,7 +3,6 @@ const {
   createBook,
   getRentedBooks,
   canRent,
-  deleteBook,
   mutateBook,
 } = require("../controllers/book.controller");
 const { checkToken, checkIfAdmin } = require("../middlewares");

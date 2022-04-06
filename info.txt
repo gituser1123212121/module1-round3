@@ -1,0 +1,29 @@
+Feature Round:
+Question 1: Book Rental Application
+You can build a book rentals application that will allow to perform the following actions.
+Create a User and Admin account
+CRUD operations with books: Create new book listing, Edit a book listing, Delete a book listing
+Show users if a book is available to rent or not
+ 
+Book info should contain-
+Isbn number(It is property of book which is unique for each book), Name, Author, PublishedOn, AddedOn
+ 
+Apis should be as follows for CRUD on books
+GET /book/list -> returns all books
+POST /book/create -> add new book 
+POST /book?delete=true  (should accept one of the 3 query params -> delete, rent, return) -> should delete/Rent/Return book
+GET /rented/{userId} -> return all books rented by user
+
+Question 2: Enhancement
+
+User should not be able to rent more than 2 books at a time
+Admin should not be able to add duplicate books
+
+-------------------------------------
+1. No two books should have same Isbn
+2. Mainly - User(role: regular user/admin) & Book
+3. Special priviliges for Admin
+
+// TODO: Can id be replaced by isbn
+
+ISBN: "849894-237283782-822382 90"

@@ -1,10 +1,12 @@
-const { compareSync, hashSync } = require("bcryptjs");
+const { compareSync, hashSync } = require("bcryptjs"); // hashing the password
 const jwt = require("jsonwebtoken");
 const User = require("../models/").user;
 
+// belongs in .env file
 const SECRET_KEY = "my_secret";
 
 const registerUser = (req, res, next) => {
+  // userObj to create new user
   const userObj = {
     email: req.body.email,
     password: hashSync(req.body.password),

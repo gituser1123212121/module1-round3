@@ -1,8 +1,10 @@
+// importing the book model
 const Book = require("../models/").book;
 const jwt = require("jsonwebtoken");
 
 const SECRET_KEY = "my_secret";
 
+// fetch all books from db
 const getBooks = (req, res, next) => {
   Book.findAll()
     .then((booksFound) => {
@@ -13,6 +15,7 @@ const getBooks = (req, res, next) => {
     });
 };
 
+// create a new book, if not exists
 const createBook = (req, res, next) => {
   const bookObj = {
     isbn: req.body.isbn,
@@ -22,12 +25,14 @@ const createBook = (req, res, next) => {
     addedOn: req.body.addedOn,
   };
 
+  // check if a book with same isbn exists
   Book.findOne({
     where: {
       isbn: bookObj.isbn,
     },
   })
     .then((bookFound) => {
+      // if the book with same isbn was not found
       if (!bookFound) {
         // create the book
         Book.create(bookObj)
@@ -40,6 +45,7 @@ const createBook = (req, res, next) => {
             res.status(500).json({ message: err.message });
           });
       } else {
+        // the book with same isbn already exists
         res.status(400).json({ message: `book already exists` });
       }
     })
@@ -48,6 +54,7 @@ const createBook = (req, res, next) => {
     });
 };
 
+// delete/renting/return
 const mutateBook = (req, res, next) => {
   const bookId = req.body.bookId;
   const decodedToken = jwt.verify(req.headers.authorization, SECRET_KEY);
@@ -139,6 +146,7 @@ const mutateBook = (req, res, next) => {
   }
 };
 
+// tell you if a book can be rented
 const canRent = (req, res, next) => {
   let bookId = req.params.bookId;
 
@@ -159,6 +167,7 @@ const canRent = (req, res, next) => {
     });
 };
 
+// get all books rented by user
 const getRentedBooks = (req, res, next) => {
   const userId = req.params.userId;
   Book.findAll({
