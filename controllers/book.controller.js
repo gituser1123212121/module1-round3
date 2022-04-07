@@ -17,6 +17,7 @@ const getBooks = (req, res, next) => {
 
 // create a new book, if not exists
 const createBook = (req, res, next) => {
+  //rentedBy is null
   const bookObj = {
     isbn: req.body.isbn,
     name: req.body.name,
@@ -54,40 +55,78 @@ const createBook = (req, res, next) => {
     });
 };
 
+// localhost:8000/api/v1/book?list=true
+// the informataion will be passed in the body
+// In the body - id
 // delete/renting/return
 const mutateBook = (req, res, next) => {
   const bookId = req.body.bookId;
+  // decode the auth token
+  // the token has the role
   const decodedToken = jwt.verify(req.headers.authorization, SECRET_KEY);
 
+  /**
+   * '?delete=true'
+   *
+   * express will construct a query object
+   * req = {
+   *      query = {
+   *        "return": "true"
+   *      }
+   * }
+   *
+   */
   if (req.query.delete === "true") {
+    // if the book exists
+    // atmost one book will exist
+    // SELECT * FROM BOOK WHERE id=1;
     Book.findOne({ where: { id: bookId } })
       .then((bookFound) => {
-        //if book exists delete it
-        Book.destroy({ where: { id: bookFound.id } })
-          .then(() => {
-            res
-              .status(200)
-              .json({ message: `book with id ${bookId} has been deleted` });
-          })
-          .catch((err) => {
-            res.status(500).json({ message: err.message });
-          });
+        // I successfully query the database
+        // if book exists delete it
+        // TODO: What if the book doesn't exist?
+        if (bookFound) {
+          // if bookFound is not empty
+          Book.destroy({ where: { id: bookFound.id } })
+            .then(() => {
+              res
+                .status(200)
+                .json({ message: `book with id ${bookId} has been deleted` });
+            })
+            .catch((err) => {
+              res.status(500).json({ message: err.message });
+            });
+        } else {
+          // invalid id has been passed
+          res.status(400).json({ message: `book with that id does not exist` });
+        }
       })
       .catch((err) => {
         res.status(500).json({ message: err.message });
       });
   } else if (req.query.rent === "true") {
+    //find all the books that have been rented by this user
+    // SELECT * FROM BOOK WHERE rentedBy = userId;
+    // 2 === 1 -> false
+    // null === 1 -> false
+    // 1 === 1 -> true
+    // findAll will return an array of Book objects
+    //[{book1}, {book2},...]
     Book.findAll({
       where: {
         rentedBy: decodedToken.userId,
       },
     })
       .then((booksFound) => {
+        // check if user has two books
+        // booksFound: 0
         if (booksFound.length !== 2) {
           //check if book is available to rent
           Book.findOne({ where: { id: bookId } })
             .then((bookFound) => {
+              // rentedBy = null, !rentedBy = true
               if (!bookFound.rentedBy) {
+                // if the book is not rented
                 Book.update(
                   { rentedBy: decodedToken.userId },
                   { where: { id: bookId } }
@@ -125,6 +164,8 @@ const mutateBook = (req, res, next) => {
         res.status(500).json({ message: err.message });
       });
   } else if (req.query.return === "true") {
+    // set rentedBy is null
+    // UPDATE BOOK SET rentedBy = null WHERE id=bookId;
     Book.update(
       { rentedBy: null },
       {
